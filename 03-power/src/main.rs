@@ -27,7 +27,6 @@ fn main() {
                 })
         })
         .collect();
-    println!("{:?}", counters);
     let mut o2_pos = 1;
     while o2_lines.len() > 1 {
         let local_counters = count_bits(&o2_lines);
@@ -71,7 +70,6 @@ fn main() {
                     })
             })
             .collect();
-        println!("{:?}", co2_lines);
         co2_pos += 1;
     }
     let o2_binary = o2_lines[0].as_str().chars().collect();

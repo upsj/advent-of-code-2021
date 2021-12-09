@@ -31,13 +31,6 @@ fn main() {
             (digits, output_digits)
         })
         .collect();
-    for number in &result {
-        println!(
-            "{:?} | {:?}",
-            number.0.iter().map(bits_to_str).collect::<Vec<_>>(),
-            number.1
-        );
-    }
     println!(
         "{}",
         result
