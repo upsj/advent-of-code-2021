@@ -19,4 +19,4 @@ jobs:
     - name: Build
       run: for f in ??-*; do cd $f; cargo build --release; cd ..; done
     - name: Run
-      run: time (for f in ??-*; do cd $f; $(find target/release -maxdepth 1 -executable -type f); cd ..; done)
+      run: time (for f in ??-*; do cd $f; echo $f; $(find target/release -maxdepth 1 -executable -type f); cd ..; done)
