@@ -17,4 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: for f in ??-*; do cd $f; cargo build --release; $(find target/release -maxdepth 1 -executable -type f); cd ..; done
+      run: for f in ??-*; do cd $f; cargo build --release; cd ..; done
+    - name: Run
+      run: time (for f in ??-*; cd $f; $(find target/release -maxdepth 1 -executable -type f); cd ..; done)
