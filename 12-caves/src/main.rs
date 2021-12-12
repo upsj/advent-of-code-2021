@@ -14,42 +14,33 @@ struct Graph {
     edges: Vec<Vec<usize>>,
 }
 
-fn backtrack_traverse(start: usize, end: usize, graph: &Graph) {
+fn backtrack_traverse(start: usize, end: usize, graph: &Graph) -> i32 {
     let n = graph.nodes.len();
     let mut local_visited = vec![false; n];
     local_visited[start] = true;
-    backtrack_traverse_internal(local_visited, start, end, graph, String::new());
+    backtrack_traverse_internal(local_visited, start, end, graph)
 }
 
-fn backtrack_traverse_small_twice(start: usize, end: usize, graph: &Graph) {
+fn backtrack_traverse_small_twice(start: usize, end: usize, graph: &Graph) -> i32 {
     let n = graph.nodes.len();
     let mut local_visited = vec![false; n];
     local_visited[start] = true;
-    backtrack_traverse_internal_small_twice(local_visited, start, end, graph, false, String::new());
+    backtrack_traverse_internal_small_twice(local_visited, start, end, graph, false)
 }
 
-fn backtrack_traverse_internal(
-    visited: Vec<bool>,
-    cur: usize,
-    end: usize,
-    graph: &Graph,
-    path: String,
-) {
-    let new_path = if path.is_empty() {
-        graph.nodes[cur].name.to_owned()
-    } else {
-        path + "," + graph.nodes[cur].name.as_str()
-    };
+fn backtrack_traverse_internal(visited: Vec<bool>, cur: usize, end: usize, graph: &Graph) -> i32 {
     if cur == end {
-        println!("{}", new_path);
+        return 1;
     }
+    let mut count = 0;
     for neighbor in &graph.edges[cur] {
         if !visited[*neighbor] || graph.nodes[*neighbor].big {
             let mut new_visited = visited.to_owned();
             new_visited[*neighbor] = true;
-            backtrack_traverse_internal(new_visited, *neighbor, end, graph, new_path.to_owned());
+            count += backtrack_traverse_internal(new_visited, *neighbor, end, graph);
         }
     }
+    count
 }
 
 fn backtrack_traverse_internal_small_twice(
@@ -58,16 +49,11 @@ fn backtrack_traverse_internal_small_twice(
     end: usize,
     graph: &Graph,
     visited_small_twice: bool,
-    path: String,
-) {
-    let new_path = if path.is_empty() {
-        graph.nodes[cur].name.to_owned()
-    } else {
-        path + "," + graph.nodes[cur].name.as_str()
-    };
+) -> i32 {
     if cur == end {
-        println!("{}", new_path);
+        return 1;
     }
+    let mut count = 0;
     for neighbor in &graph.edges[cur] {
         let neighbor_node = &graph.nodes[*neighbor];
         let neighbor_visited = visited[*neighbor];
@@ -79,16 +65,16 @@ fn backtrack_traverse_internal_small_twice(
                 visited_small_twice || (!graph.nodes[*neighbor].big && visited[*neighbor]);
             let mut new_visited = visited.to_owned();
             new_visited[*neighbor] = true;
-            backtrack_traverse_internal_small_twice(
+            count += backtrack_traverse_internal_small_twice(
                 new_visited,
                 *neighbor,
                 end,
                 graph,
                 new_visited_small_twice,
-                new_path.to_owned(),
             );
         }
     }
+    count
 }
 
 fn main() {
@@ -107,7 +93,7 @@ fn main() {
         .map(|p| p[0].to_owned())
         .chain(str_edges.iter().map(|p| p[1].to_owned()))
         .collect();
-    let mut node_vec: Vec<Node> = nodes
+    let node_vec: Vec<Node> = nodes
         .into_iter()
         .map(|s| {
             let is_upper = s.as_str().chars().all(|c| c.is_uppercase());
@@ -122,7 +108,6 @@ fn main() {
             }
         })
         .collect();
-    node_vec.sort_by_key(|n| n.name.to_owned());
     let node_map: HashMap<String, usize> = node_vec
         .iter()
         .enumerate()
@@ -136,14 +121,18 @@ fn main() {
         edge_vec[u].push(v);
         edge_vec[v].push(u);
     }
-    for neighbors in &mut edge_vec {
-        neighbors.sort();
-    }
     let graph = Graph {
         nodes: node_vec,
         edges: edge_vec,
     };
-    backtrack_traverse_small_twice(node_map["start"], node_map["end"], &graph)
+    println!(
+        "{}",
+        backtrack_traverse(node_map["start"], node_map["end"], &graph)
+    );
+    println!(
+        "{}",
+        backtrack_traverse_small_twice(node_map["start"], node_map["end"], &graph)
+    );
 }
 
 // The output is wrapped in a Result to allow matching on errors
