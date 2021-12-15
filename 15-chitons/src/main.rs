@@ -66,6 +66,39 @@ fn pop_min(pq: &mut Vec<HeapEntry>, heap_handles: &mut Vec<Vec<Option<usize>>>) 
     min
 }
 
+fn print_path(nodes: Vec<Vec<NodeInfo>>) {
+    let height = nodes.len();
+    let width = nodes[0].len();
+    let mut part_of_path = vec![vec![false; width]; height];
+    part_of_path[0][0] = true;
+    let mut x = width - 1;
+    let mut y = height - 1;
+    while x != 0 || y != 0 {
+        part_of_path[y][x] = true;
+        let node = &nodes[y][x];
+        x = node.px;
+        y = node.py;
+    }
+    for y in 0..height {
+        for x in 0..width {
+            if part_of_path[y][x] {
+                print!("█");
+            } else {
+                let dx = nodes[y][x].px as i32 - x as i32;
+                let dy = nodes[y][x].py as i32 - y as i32;
+                match (dx, dy) {
+                    (-1, 0) => print!("←"),
+                    (1, 0) => print!("→"),
+                    (0, -1) => print!("↑"),
+                    (0, 1) => print!("↓"),
+                    _ => panic!("Unknown direction"),
+                }
+            }
+        }
+        println!();
+    }
+}
+
 fn run_dijkstra(dangers: &Vec<Vec<usize>>) -> Vec<Vec<NodeInfo>> {
     let width = dangers[0].len();
     let height = dangers.len();
@@ -149,6 +182,7 @@ fn main() {
         .collect();
     let nodes = run_dijkstra(&dangers);
     println!("{}", nodes.last().unwrap().last().unwrap().dist);
+    // print_path(nodes);
     let tiled_dangers: Vec<Vec<usize>> = (0..5)
         .flat_map(|y| {
             dangers.iter().map(move |row| {
@@ -160,6 +194,7 @@ fn main() {
         .collect();
     let tiled_nodes = run_dijkstra(&tiled_dangers);
     println!("{}", tiled_nodes.last().unwrap().last().unwrap().dist);
+    // print_path(tiled_nodes);
 }
 
 // The output is wrapped in a Result to allow matching on errors
